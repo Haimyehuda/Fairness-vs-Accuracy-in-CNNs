@@ -18,38 +18,26 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
+# ===============================================================
+# Path setup (robust)
+# ===============================================================
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
-COMMON_PATH = os.path.join(PROJECT_ROOT, "common")
+REPO_ROOT = os.path.dirname(PROJECT_ROOT)
 
-sys.path.insert(0, PROJECT_ROOT)
-sys.path.insert(0, COMMON_PATH)
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
-from scripts.scenarios import SCENARIOS
-from config import (
-    RESEARCH_TITLE,
-    EXPERIMENT_SHEET_ID,
-    SEED,
-    BATCH_SIZE,
-    EPOCHS,
-    LR,
-    CHEXPERT_ROOT,
-    EVAL_INDEX_PATH,
-    DRIVE_ROOT,
-    RESULTS_PATH,
-    POS_LABEL,
-    NEG_LABEL,
-    IMAGE_SIZE,
-    NORMALIZE_MEAN,
-    NORMALIZE_STD,
-    RESULT_COLUMNS,
-)
-
-from dataset import XRTDataset
-from model import get_model
-from pipeline.train import train_model
-from pipeline.eval import evaluate_model
-from experiment_logger import log_experiment_to_sheets
+# ===============================================================
+# Project imports
+# ===============================================================
+from project.common.config import *
+from project.scripts.scenarios import SCENARIOS
+from project.common.dataset import XRTDataset
+from project.common.model import get_model
+from project.common.pipeline.train import train_model
+from project.common.pipeline.eval import evaluate_model
+from project.common.experiment_logger import log_experiment_to_sheets
 
 
 def parse_args():
@@ -218,7 +206,7 @@ def main():
     }
 
     df_row = pd.DataFrame([row])
-    
+
     # Ensure unified column order
     df_row = df_row.reindex(columns=RESULT_COLUMNS)
 

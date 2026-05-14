@@ -24,31 +24,29 @@ import pandas as pd
 import torch
 import sys
 
-# -----------------------------
-# Resolve project paths FIRST
-# -----------------------------
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-COMMON_PATH = os.path.join(PROJECT_ROOT, "common")
-
-sys.path.insert(0, PROJECT_ROOT)
-sys.path.insert(0, COMMON_PATH)
-
-# -----------------------------
-# Standard / third-party imports
-# -----------------------------
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
 # -----------------------------
-# Project imports (now visible)
+# Path setup (robust)
 # -----------------------------
-from experiment_logger import log_experiment_to_sheets
-from dataset import XRTDataset
-from model import get_model
-from pipeline.train import train_model
-from pipeline.eval import evaluate_model
-from config import *
-from scripts.scenarios import SCENARIOS
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+REPO_ROOT = os.path.dirname(PROJECT_ROOT)
+
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
+# -----------------------------
+# Project imports
+# -----------------------------
+from project.common.config import *
+from project.scripts.scenarios import SCENARIOS
+from project.common.dataset import XRTDataset
+from project.common.model import get_model
+from project.common.pipeline.train import train_model
+from project.common.pipeline.eval import evaluate_model
+from project.common.experiment_logger import log_experiment_to_sheets
 
 
 # -----------------------------
@@ -199,7 +197,7 @@ def main():
     # Persist results
     # -----------------------------
     df_row = pd.DataFrame([row])
-    
+
     # Ensure unified column order
     df_row = df_row.reindex(columns=RESULT_COLUMNS)
 
