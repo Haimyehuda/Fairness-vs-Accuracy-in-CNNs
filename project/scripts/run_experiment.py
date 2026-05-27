@@ -11,7 +11,7 @@ Each execution:
 - Evaluates it on a fixed, locked EVAL reference set
 - Appends a single row to the global results table
 
-No model checkpoints are saved.
+Saves model checkpoint for post-processing
 """
 
 # -----------------------------
