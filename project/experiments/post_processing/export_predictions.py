@@ -28,7 +28,8 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-
+from torchvision import transforms
+from project.common.config import IMAGE_SIZE, NORMALIZE_MEAN, NORMALIZE_STD
 
 # ===============================================================
 # Robust sys.path setup
@@ -364,6 +365,11 @@ def main():
     # -----------------------------------------------------------
     # Dataset / DataLoader
     # -----------------------------------------------------------
+    eval_transform = transforms.Compose([
+            transforms.Resize(IMAGE_SIZE),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=NORMALIZE_MEAN, std=NORMALIZE_STD),
+        ])
     eval_dataset = XRTDataset(eval_df, transform=eval_transform)
 
     eval_loader = DataLoader(
