@@ -9,6 +9,7 @@ Research guarantees:
 - Uses the same SCENARIOS definition
 - Uses the same LOCKED evaluation reference set
 - Applies augmentation ONLY to the TRAIN set
+- Saves model checkpoint for post-processing
 - Logs results consistently to:
   - Persistent CSV (Google Drive)
   - Google Sheets (shared research ledger)
@@ -19,6 +20,7 @@ The experiment is fully reproducible and protocol-aligned.
 # ===============================================================
 # Standard imports
 # ===============================================================
+from project.common import model
 import os
 import sys
 import argparse
@@ -175,6 +177,22 @@ def main():
         epochs=EPOCHS,
         lr=LR,
     )
+
+    # -----------------------------------------------------------
+    # Save checkpoint for post-processing
+    # -----------------------------------------------------------
+    CHECKPOINT_DIR = os.path.join(DRIVE_ROOT, "checkpoints")
+    os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+    checkpoint_path = os.path.join(
+        CHECKPOINT_DIR,
+        f"Data_Augmentation_{args.scenario}.pth"
+    )
+
+    torch.save(model.state_dict(), checkpoint_path)
+
+    print("✔ Checkpoint saved to:")
+    print(checkpoint_path)
 
     # -----------------------------------------------------------
     # Evaluation
