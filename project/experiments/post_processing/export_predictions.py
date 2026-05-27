@@ -364,10 +364,7 @@ def main():
     # -----------------------------------------------------------
     # Dataset / DataLoader
     # -----------------------------------------------------------
-    eval_dataset = XRTDataset(
-        dataframe=eval_df,
-        transform=None,
-    )
+    eval_dataset = XRTDataset(eval_df, transform=eval_transform)
 
     eval_loader = DataLoader(
         eval_dataset,
