@@ -17,6 +17,7 @@ No model checkpoints are saved.
 # -----------------------------
 # Standard imports
 # -----------------------------
+from project.common import model
 import os
 import argparse
 import numpy as np
@@ -153,6 +154,22 @@ def main():
     train_model(
         model=model, train_loader=train_loader, device=device, epochs=EPOCHS, lr=LR
     )
+
+    # -----------------------------
+    # Save checkpoint for post-processing
+    # -----------------------------
+    CHECKPOINT_DIR = os.path.join(DRIVE_ROOT, "checkpoints")
+    os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+    checkpoint_path = os.path.join(
+        CHECKPOINT_DIR,
+        f"Baseline_{args.scenario}.pth"
+    )
+
+    torch.save(model.state_dict(), checkpoint_path)
+
+    print("✔ Checkpoint saved to:")
+    print(checkpoint_path)
 
     # -----------------------------
     # Evaluation
