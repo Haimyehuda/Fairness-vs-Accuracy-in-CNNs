@@ -5,6 +5,7 @@ logit_adjustment.py
 In-processing fairness mitigation experiment using Logit Adjustment.
 """
 
+from project.common import model
 import os
 import sys
 import argparse
@@ -187,6 +188,21 @@ def main():
         lr=LR,
         criterion=criterion
     )
+    # -----------------------------------------------------------
+    # Save checkpoint for post-processing
+    # -----------------------------------------------------------
+    CHECKPOINT_DIR = os.path.join(DRIVE_ROOT, "checkpoints")
+    os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+    checkpoint_path = os.path.join(
+        CHECKPOINT_DIR,
+        f"Logit_Adjustment_{args.scenario}.pth"
+    )
+
+    torch.save(model.state_dict(), checkpoint_path)
+
+    print("✔ Checkpoint saved to:")
+    print(checkpoint_path)
 
     # -----------------------------
     # Evaluation

@@ -5,6 +5,7 @@ focal_loss.py
 In-processing fairness mitigation experiment using Focal Loss.
 """
 
+from project.common import model
 import os
 import sys
 import argparse
@@ -86,7 +87,7 @@ def parse_args():
 def main():
     print(f"\n=== {RESEARCH_TITLE} ===")
     print("METHOD: Focal Loss")
-    
+
     args = parse_args()
     scenario = SCENARIOS[args.scenario]
 
@@ -171,13 +172,29 @@ def main():
     print(f"USING FOCAL LOSS (gamma={args.gamma})")
 
     train_model(
-        model=model, 
-        train_loader=train_loader, 
-        device=device, 
-        epochs=EPOCHS, 
+        model=model,
+        train_loader=train_loader,
+        device=device,
+        epochs=EPOCHS,
         lr=LR,
         criterion=criterion
     )
+
+    # -----------------------------------------------------------
+    # Save checkpoint for post-processing
+    # -----------------------------------------------------------
+    CHECKPOINT_DIR = os.path.join(DRIVE_ROOT, "checkpoints")
+    os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+    checkpoint_path = os.path.join(
+        CHECKPOINT_DIR,
+        f"Focal_Loss_{args.scenario}.pth"
+    )
+
+    torch.save(model.state_dict(), checkpoint_path)
+
+    print("✔ Checkpoint saved to:")
+    print(checkpoint_path)
 
     # -----------------------------
     # Evaluation
@@ -221,7 +238,7 @@ def main():
     # Persist results
     # -----------------------------
     df_row = pd.DataFrame([row])
-    
+
     # Ensure unified column order
     df_row = df_row.reindex(columns=RESULT_COLUMNS)
 

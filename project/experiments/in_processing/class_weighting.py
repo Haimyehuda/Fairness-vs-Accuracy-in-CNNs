@@ -57,7 +57,7 @@ def parse_args():
 def main():
     print(f"\n=== {RESEARCH_TITLE} ===")
     print("METHOD: Class Weighting")
-    
+
     args = parse_args()
     scenario = SCENARIOS[args.scenario]
 
@@ -122,10 +122,10 @@ def main():
     total_samples = n_pneu + n_norm
     w_norm = total_samples / (2.0 * n_norm) if n_norm > 0 else 1.0
     w_pneu = total_samples / (2.0 * n_pneu) if n_pneu > 0 else 1.0
-    
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     class_weights = torch.tensor([w_norm, w_pneu], dtype=torch.float).to(device)
-    
+
     print(f"CLASS WEIGHTS: NORMAL={w_norm:.3f}, PNEUMONIA={w_pneu:.3f}")
 
     # -----------------------------
@@ -153,13 +153,28 @@ def main():
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     train_model(
-        model=model, 
-        train_loader=train_loader, 
-        device=device, 
-        epochs=EPOCHS, 
+        model=model,
+        train_loader=train_loader,
+        device=device,
+        epochs=EPOCHS,
         lr=LR,
         criterion=criterion
     )
+    # -----------------------------------------------------------
+    # Save checkpoint for post-processing
+    # -----------------------------------------------------------
+    CHECKPOINT_DIR = os.path.join(DRIVE_ROOT, "checkpoints")
+    os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+    checkpoint_path = os.path.join(
+        CHECKPOINT_DIR,
+        f"Class_Weighting_{args.scenario}.pth"
+    )
+
+    torch.save(model.state_dict(), checkpoint_path)
+
+    print("✔ Checkpoint saved to:")
+    print(checkpoint_path)
 
     # -----------------------------
     # Evaluation
@@ -203,7 +218,7 @@ def main():
     # Persist results
     # -----------------------------
     df_row = pd.DataFrame([row])
-    
+
     # Ensure unified column order
     df_row = df_row.reindex(columns=RESULT_COLUMNS)
 
